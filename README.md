@@ -4,7 +4,7 @@ _Este es un trabajo para la asignatura de Sistemas Operativos de la USAL del añ
 
 _El juego esta hecho en Shell Script_
 
-##  Instrucciones de juego
+## 🚀Instrucciones de juego
 
 _Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas._
 
