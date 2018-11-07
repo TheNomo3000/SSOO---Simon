@@ -49,7 +49,7 @@ menu(){
     echo -e "C) Configuracion"
     echo -e "E) Estadisticas"
     echo -e "S) SALIR"
-    echo -e "\n\nSaimon, Introduzca una opcion >>"
+    echo -e "\n\nSimon, Introduzca una opcion >>"
 
     read opcion
     case "$opcion" in
