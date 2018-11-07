@@ -10,7 +10,7 @@ _Estas instrucciones te permitirán obtener una copia del proyecto en funcionami
 
 ## Ejecutar🔧📦
 
-_Para ejecutarlo utilizamos el comando `sh Jugar.sh`_
+_Para ejecutarlo utilizamos el comando `sh game.sh`_
 
 ## Construido con 🛠️
 
