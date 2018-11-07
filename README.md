@@ -4,19 +4,19 @@ _Este es un trabajo para la asignatura de Sistemas Operativos de la USAL del añ
 
 _El juego esta hecho en Shell Script_
 
-## Instrucciones de juego 🚀❤️
+##  Instrucciones de juego
 
 _Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas._
 
-## Ejecutar🔧📦
+## 📦 Ejecutar 
 
 _Para ejecutarlo utilizamos el comando `sh game.sh`_
 
-## Construido con 🛠️
+## 🛠 Construido con 
 
 * [Shell Script](https://www.shellscript.sh/) - Shell Scripting Tutorial
 
-## Autores ✒️
+## ✒️ Autores
 
 * **Rodrigo Zavala Zevallos** - *Creador* - [TheNomo3000](https://github.com/TheNomo3000)
 * **Arturo Vazquez** - *Creador* - [ArturoVazquez](https://github.com/ArturoVazquez)
