@@ -19,5 +19,5 @@ _Para ejecutarlo utilizamos el comando `sh game.sh`_
 ## ✒️ Autores
 
 * **Rodrigo Zavala Zevallos** - *Creador* - [TheNomo3000](https://github.com/TheNomo3000)
-* **Arturo Vazquez** - *Creador* - [ArturoVazquez](https://github.com/ArturoVazquez)
+* **Arturo David Vázquez Paumard** - *Creador* - [ArturoVazquez](https://github.com/ArturoVazquez)
 
