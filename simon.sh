@@ -27,12 +27,12 @@ ruta=(`pwd`)
 if !(test -f $ubiEst/$ficEst); then
   touch estadisticas.txt
   ubiEst=(`pwd`)
-  rm conf.cfg
-  touch conf.cfg
-  chmod 744 conf.cfg
-  echo NUMCOLORES=$numcolores>>conf.cfg
-  echo ENTRETIEMPO=$segundos>>conf.cfg
-  echo Estadisticas=$ubiEst/$ficEst>>conf.cfg
+  rm confi.cfg
+  touch confi.cfg
+  chmod 744 confi.cfg
+  echo NUMCOLORES=$numcolores>>confi.cfg
+  echo ENTRETIEMPO=$segundos>>confi.cfg
+  echo Estadisticas=$ubiEst/$ficEst>>confi.cfg
   echo Se ha creado el fichero estadisticas.txt
 fi
 
@@ -43,14 +43,13 @@ menu(){
     numcolores=(`head -1 conf.cfg|cut -d "=" -f 2`) #numcolores
     segundos=(`head -2 conf.cfg|tail -1 |cut -d "=" -f 2`) #segundos
     clear
-    echo -e "\t\t\tSaimon v 1.0"
+    echo -e "\t\t\tSimon Game v 1.0"
     echo -e "\t\t============================"
     echo -e "J) JUGAR"
     echo -e "C) Configuracion"
     echo -e "E) Estadisticas"
     echo -e "S) SALIR"
-    echo -e ""
-    echo -e "Saimon, Introduzca una opcion >>"
+    echo -e "\n\nSaimon, Introduzca una opcion >>"
 
     read opcion
     case "$opcion" in
@@ -75,11 +74,14 @@ menu(){
 #-----------CONFIG-----------#
 config(){
     clear
+    echo -e "\t\t\tSimon Game v 1.0"
+    echo -e "\t\t============================"
     echo -e "1) Numero de colores : $numcolores "
-    echo -e "2) Entre Tiempo : $segundos"
+    echo -e "2) Tiempo : $segundos"
     echo -e "3) Archivo de estadisticas : $ubiEst/$ficEst"
-    echo -e "4) SALIR"
+    echo -e "4) VOLVER AL MENU"
 
+    echo -e "\n\nIntroduzca una opcion para modificar >>"
     read opcion
     case "$opcion" in
     1)
@@ -93,7 +95,7 @@ config(){
         cont;;
     4)
         echo Has salido del menú
-        exit 0;;
+        menu;;
     *)
         echo Has introducido mal la opción, prueba de nuevo
         cont;;
