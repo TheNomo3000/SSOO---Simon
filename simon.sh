@@ -12,21 +12,24 @@ PURPLE='\033[1;35m'
 
 #---------COMPROBACIÓNES----------#
 if [ $# -gt 1 ]; then
-  echo Has introducido más de un argumento
-  exit 1
+    echo "Has introducido más de un argumento"
+    exit 1
 fi
 if [ "$1" == "-g" ]; then
-  echo Arturo David Vázquez Paumard
-  echo Rodrigo Zavala Zevallos
-  exit 1
+    echo -e "\t\t\t\t${RED}AUTORES${NC}"
+    echo -e "${PURPLE}\t\t\t=======================${NC}"
+    echo -e "${GREEN}Arturo David Vázquez Paumard${NC}"
+    echo -e "${GREEN}Rodrigo Zavala Zevallos${NC}"
+    exit 1
 fi
 
 if !(test -f "confi.cfg"); then
-  echo El fichero \"confi.cfg\" no está en el directorio o no existe, creelo antes de ejecutar el script
-  exit 1
+    echo "El fichero \"confi.cfg\" no está en el directorio o no existe, creelo antes de ejecutar el script"
+    exit 1
 fi
 
 #-----------ARGUMENTOS------------#
+aciertos = 0
 temp=(`tail -1 confi.cfg|cut -d "=" -f 2`)
 numcolores=(`head -1 confi.cfg|cut -d "=" -f 2`)
 segundos=(`head -2 confi.cfg|tail -1 |cut -d "=" -f 2`)
@@ -45,7 +48,7 @@ if !(test -f $ubiEst/$ficEst); then
   echo Se ha creado el fichero estadisticas.txt
 fi
 #---------CARGAR VALORES----------#
-cargarValores(){
+ cargarValores(){
     temp=(`tail -1 confi.cfg|cut -d "=" -f 2`) 
     numcolores=(`head -1 confi.cfg|cut -d "=" -f 2`) #numcolores
     segundos=(`head -2 confi.cfg|tail -1 |cut -d "=" -f 2`) #segundos
@@ -54,17 +57,16 @@ cargarValores(){
     return
 }
 #--------------MENU---------------#
-g=0
-menu(){
+ menu(){
     cargarValores
     clear
     echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
     echo -e "${PURPLE}\t\t============================${NC}"
     echo -e "${PURPLE}J)${NC} JUGAR"
-    echo -e "${PURPLE}C)${NC} Configuracion"
+    echo -e "${PURPLE}C)${NC} CONFIGURACION"
     echo -e "${PURPLE}E)${NC} ESTADISTICAS"
     echo -e "${PURPLE}S)${NC} SALIR"
-    echo -e "\n\nSimon, Introduzca una opcion >>"
+    echo -e "\n\n\"Simon\", Introduzca una opcion >>"
 
     read opcion
     case "$opcion" in
@@ -87,11 +89,11 @@ menu(){
 }
 
 #-----------CONFIG-----------#
-config(){
+ config(){
     cargarValores
     clear
-    echo -e "\t\t\tSimon Game v 1.0"
-    echo -e "\t\t============================"
+    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
+    echo -e "${PURPLE}\t\t============================${NC}"
     echo -e "1) Numero de colores : $numcolores "
     echo -e "2) Tiempo : $segundos"
     echo -e "3) Archivo de estadisticas : $ubiEst/$ficEst"
@@ -130,27 +132,49 @@ config(){
     esac
 }
 #-----------JUEGO------------#
-game (){
+ game (){
     echo Numero de posibilidade=$numcolores
     echo Numero de segundos=$segundos
-
-    aciertos = 0
-    while [aciertos<20]
+    SECUENCIA="${NC}"
+    obtenerColor `echo $(($RANDOM%4))`        
+    while (( aciertos<20 ))
     do
-        echo Introduce la secuencia:
-        read
-        clear
-        if [ "${t}" = "$(echo ${t}|egrep '^[0-9]*$')" ];then
-            let tries--
-            let j--
-            echo "No se permiten números"
-            continue
+        echo -e "$SECUENCIA"
+        CONTADOR=$CONTADOR+1
+        read USERCOL
+        AUX=`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
+        #FALLA A LA HORA DE COMPARAR
+        if [[ "$AUX"="$USERCOL" ]]; 
+        then
+            aciertos=${aciertos}+1
+            obtenerColor `echo $(($RANDOM%4))`        
+        else
+            echo -e "${RED}Te has equivocado!"
         fi
     done
+    echo -e "$SECUENCIA"
+}
+ obtenerColor(){
+    case "$1" in
+    0)
+        SECUENCIA="${SECUENCIA}${GREEN}V${NC}"
+        return;;
+    1)
+        SECUENCIA="${SECUENCIA}${RED}R${NC}"
+        return;;
+    2)
+        SECUENCIA="${SECUENCIA}${BLUE}Z${NC}"
+        return;;
+    3)
+        SECUENCIA="${SECUENCIA}${YELLOW}A${NC}"
+        return;;
+    *)
+        echo -e "${RED}ERROR INESPERADO${NC}";;
+    esac
 }
 
 #-----------JUEGO------------#
-cont(){
+ cont(){
     echo ""
     echo -e "\nPulsa INTRO para continuar\n"
     read;
