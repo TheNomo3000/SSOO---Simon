@@ -67,7 +67,6 @@ fi
     echo -e "${PURPLE}E)${NC} ESTADISTICAS"
     echo -e "${PURPLE}S)${NC} SALIR"
     echo -e "\n\n\"Simon\", Introduzca una opcion >>"
-
     read opcion
     case "$opcion" in
     j|J)
@@ -77,7 +76,7 @@ fi
         config
         cont;;
     e|E)
-        statistics
+        stats
         cont;;
     s|S)
         echo Has salido del menú
@@ -133,26 +132,38 @@ fi
 }
 #-----------JUEGO------------#
  game (){
+    START=$SECONDS
+    CONTADOR=1
+    AUX=""
+    SECUENCIA="${NC}"
+
+    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
+    echo -e "${PURPLE}\t\t============================${NC}"
     echo Numero de posibilidade=$numcolores
     echo Numero de segundos=$segundos
-    SECUENCIA="${NC}"
     obtenerColor `echo $(($RANDOM%4))`
-    CONTADOR=1    
+    echo -e "$SECUENCIA"
     while (( aciertos<20 ))
     do
-        echo -e "$SECUENCIA"
         read USERCOL
-        AUX=`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
+        AUX=$AUX`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
+        echo "AUX: $AUX"
         if [[ $AUX = $USERCOL ]]; 
         then
             CONTADOR=`expr $CONTADOR + 1`
             aciertos=${aciertos}+1
-            obtenerColor `echo $(($RANDOM%4))`        
+            obtenerColor `echo $(($RANDOM%$numcolores))`        
+            echo -e "$SECUENCIA"
+            sleep $segundos
         else
-            echo -e "${RED}Te has equivocado!"
+            echo -e "${RED}HAS FALLADO!${NC}"
+            echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
+            HORATEMP=`echo $(date +%r)| tr -d '[[:space:]]'` 
+            DURACION=$(( SECONDS - START ))
+            echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
+            cont
         fi
     done
-    echo -e "$SECUENCIA"
 }
  obtenerColor(){
     case "$1" in
@@ -173,11 +184,32 @@ fi
     esac
 }
 
+#-----------STATS------------#
+stats(){
+    clear
+    echo -e "\t\t\t\t${YELLOW}ESTADISTICAS${NC}"
+    echo -e "${PURPLE}\t\t\t============================${NC}\n\n"
+    echo -e "${BLUE}   Partida |   Fecha   |   Hora   | Numero | Tiempo | Longitud | Secuencia"
+    echo -e "   =======================================================================${NC}\n"
+    for LINEA in `cat $ubiEst/$ficEst ` #LINEA guarda el resultado del fichero datos.txt
+    do
+        PARTIDA=`echo $LINEA | cut -d "|" -f1`
+        FECHA=`echo $LINEA | cut -d "|" -f2`
+        HORA=`echo $LINEA | cut -d "|" -f3`
+        NUMERO=`echo $LINEA | cut -d "|" -f4`
+        TIEMPO=`echo $LINEA | cut -d "|" -f5`
+        LONGITUD=`echo $LINEA | cut -d "|" -f6`
+        SECUENCIA1=`echo $LINEA | cut -d "|" -f7`
+        echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIA1"
+    done
+    echo -e "${BLUE}\n   =======================================================================${NC}\n"
+}
+
 #-----------JUEGO------------#
  cont(){
     echo ""
-    echo -e "\nPulsa INTRO para continuar\n"
+    echo -e "\n${PURPLE}Pulsa INTRO para continuar...${NC}"
     read;
-    menu
+    return
 }
 menu
