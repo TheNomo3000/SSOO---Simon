@@ -32,22 +32,28 @@ if !(test -f $ubiEst/$ficEst); then
   chmod 744 confi.cfg
   echo NUMCOLORES=$numcolores>>confi.cfg
   echo ENTRETIEMPO=$segundos>>confi.cfg
-  echo Estadisticas=$ubiEst/$ficEst>>confi.cfg
+  echo ESTADISTICAS=$ubiEst/$ficEst>>confi.cfg
   echo Se ha creado el fichero estadisticas.txt
 fi
-
+#---------CARGAR VALORES----------#
+cargarValores(){
+    temp=(`tail -1 confi.cfg|cut -d "=" -f 2`) 
+    numcolores=(`head -1 confi.cfg|cut -d "=" -f 2`) #numcolores
+    segundos=(`head -2 confi.cfg|tail -1 |cut -d "=" -f 2`) #segundos
+    ubiEst=${temp%/*}
+    ficEst=${temp##*[/]}
+    return
+}
 #--------------MENU---------------#
 g=0
 menu(){
-    temp=(`tail -1 conf.cfg|cut -d "=" -f 2`) 
-    numcolores=(`head -1 conf.cfg|cut -d "=" -f 2`) #numcolores
-    segundos=(`head -2 conf.cfg|tail -1 |cut -d "=" -f 2`) #segundos
+    cargarValores
     clear
     echo -e "\t\t\tSimon Game v 1.0"
     echo -e "\t\t============================"
     echo -e "J) JUGAR"
     echo -e "C) Configuracion"
-    echo -e "E) Estadisticas"
+    echo -e "E) ESTADISTICAS"
     echo -e "S) SALIR"
     echo -e "\n\nSimon, Introduzca una opcion >>"
 
@@ -73,6 +79,7 @@ menu(){
 
 #-----------CONFIG-----------#
 config(){
+    cargarValores
     clear
     echo -e "\t\t\tSimon Game v 1.0"
     echo -e "\t\t============================"
@@ -83,16 +90,21 @@ config(){
 
     echo -e "\n\nIntroduzca una opcion para modificar >>"
     read opcion
+    echo -e "\nIntroducir valor >> "
     case "$opcion" in
     1)
-        clear
-        game;;
+        read opcion
+        sed -i "/NUMCOLORES/ s/$numcolores/$opcion/g" confi.cfg
+        config;;
     2)
-        config
-        cont;;
+        read opcion
+        sed -i "/ENTRETIEMPO/ s/$segundos/$opcion/g" confi.cfg
+        config;;
     3)
-        statistics
-        cont;;
+        echo $ficEst
+        read opcion
+        sed -i "/ESTADISTICAS/ s/$ficEst/$opcion/g" confi.cfg 
+        config;;
     4)
         echo Has salido del menú
         menu;;
