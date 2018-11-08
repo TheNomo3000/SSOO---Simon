@@ -136,16 +136,16 @@ fi
     echo Numero de posibilidade=$numcolores
     echo Numero de segundos=$segundos
     SECUENCIA="${NC}"
-    obtenerColor `echo $(($RANDOM%4))`        
+    obtenerColor `echo $(($RANDOM%4))`
+    CONTADOR=1    
     while (( aciertos<20 ))
     do
         echo -e "$SECUENCIA"
-        CONTADOR=$CONTADOR+1
         read USERCOL
         AUX=`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
-        #FALLA A LA HORA DE COMPARAR
-        if [[ "$AUX"="$USERCOL" ]]; 
+        if [[ $AUX = $USERCOL ]]; 
         then
+            CONTADOR=`expr $CONTADOR + 1`
             aciertos=${aciertos}+1
             obtenerColor `echo $(($RANDOM%4))`        
         else
