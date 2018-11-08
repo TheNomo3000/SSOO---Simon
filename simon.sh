@@ -1,6 +1,15 @@
 #!/bin/bash
 clear
 
+#------------COLORES--------------#
+NC='\033[0m' #NECESARIO SIEMPRE PARA FINALIZAR EL COLOR
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+CYAN='\033[1;36m'
+PURPLE='\033[1;35m'
+
 #---------COMPROBACIÓNES----------#
 if [ $# -gt 1 ]; then
   echo Has introducido más de un argumento
@@ -49,12 +58,12 @@ g=0
 menu(){
     cargarValores
     clear
-    echo -e "\t\t\tSimon Game v 1.0"
-    echo -e "\t\t============================"
-    echo -e "J) JUGAR"
-    echo -e "C) Configuracion"
-    echo -e "E) ESTADISTICAS"
-    echo -e "S) SALIR"
+    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
+    echo -e "${PURPLE}\t\t============================${NC}"
+    echo -e "${PURPLE}J)${NC} JUGAR"
+    echo -e "${PURPLE}C)${NC} Configuracion"
+    echo -e "${PURPLE}E)${NC} ESTADISTICAS"
+    echo -e "${PURPLE}S)${NC} SALIR"
     echo -e "\n\nSimon, Introduzca una opcion >>"
 
     read opcion
@@ -90,10 +99,17 @@ config(){
 
     echo -e "\n\nIntroduzca una opcion para modificar >>"
     read opcion
-    echo -e "\nIntroducir valor >> "
+    echo -e "\nIntroducir valor >>"
     case "$opcion" in
     1)
         read opcion
+        while (( opcion < 2 ||opcion > 4))
+        do
+            echo -e "$RED+El numero no puede ser menor de 2 o mayor de 4.$NC"
+            echo -e "\nIntroducir un valor valido >>"
+            read opcion
+        done
+        echo -e "OPCION : $opcion"
         sed -i "/NUMCOLORES/ s/$numcolores/$opcion/g" confi.cfg
         config;;
     2)
