@@ -149,7 +149,7 @@ fi
     echo Numero de segundos=$segundos
     obtenerColor `echo $(($RANDOM%4))`
     echo -e "$SECUENCIA"
-    while (( aciertos<20 ))
+    while (( aciertos<5 ))
     do
         read USERCOL
         AUX=$AUX`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
