@@ -1,6 +1,5 @@
 #!/bin/bash
 clear
-
 #------------COLORES--------------#
 NC='\033[0m' #NECESARIO SIEMPRE PARA FINALIZAR EL COLOR
 RED='\033[1;31m'
@@ -29,7 +28,7 @@ if !(test -f "confi.cfg"); then
 fi
 
 #-----------ARGUMENTOS------------#
-aciertos = 0
+aciertos=0
 temp=(`tail -1 confi.cfg|cut -d "=" -f 2`)
 numcolores=(`head -1 confi.cfg|cut -d "=" -f 2`)
 segundos=(`head -2 confi.cfg|tail -1 |cut -d "=" -f 2`)
@@ -111,16 +110,19 @@ fi
             read opcion
         done
         echo -e "OPCION : $opcion"
-        sed -i "/NUMCOLORES/ s/$numcolores/$opcion/g" confi.cfg
+        sed "/NUMCOLORES/ s/$numcolores/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
+        rm confiTemp.cfg
         config;;
     2)
         read opcion
-        sed -i "/ENTRETIEMPO/ s/$segundos/$opcion/g" confi.cfg
+        sed "/ENTRETIEMPO/ s/$segundos/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
+        rm confiTemp.cfg
         config;;
     3)
         echo $ficEst
         read opcion
-        sed -i "/ESTADISTICAS/ s/$ficEst/$opcion/g" confi.cfg 
+        sed "/ESTADISTICAS/ s/$ficEst/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
+        rm confiTemp.cfg
         config;;
     4)
         echo Has salido del menú
@@ -203,13 +205,15 @@ stats(){
         echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIA1"
     done
     echo -e "${BLUE}\n   =======================================================================${NC}\n"
+    cont
+    menu
 }
 
 #-----------JUEGO------------#
- cont(){
+cont(){
     echo ""
     echo -e "\n${PURPLE}Pulsa INTRO para continuar...${NC}"
-    read;
+    read
     return
 }
 menu
