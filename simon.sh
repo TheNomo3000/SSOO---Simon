@@ -20,6 +20,13 @@ if [ "$1" == "-g" ]; then
     echo -e "${GREEN}Arturo David Vázquez Paumard${NC}"
     echo -e "${GREEN}Rodrigo Zavala Zevallos${NC}"
     exit 1
+else if [ ! -z "$1" ]; then
+    echo -e "${RED}ERROR : Argumento no valido${NC}\n"
+    echo -e "Ejecutar : ./simon.sh [arg]"
+    echo -e "${BLUE}Argumentos: ${NC}"
+    echo -e "${GREEN}\t-g \t Muestra los creadores del juego.${NC}"
+    exit 1
+    fi
 fi
 
 if !(test -f "confi.cfg"); then
