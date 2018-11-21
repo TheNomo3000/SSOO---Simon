@@ -55,12 +55,17 @@ fi
     ficEst=${temp##*[/]}
     return
 }
+#--------------Titulo---------------#
+titulo(){
+    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
+    echo -e "${PURPLE}\t\t============================${NC}"
+    return
+}
 #--------------MENU---------------#
  menu(){
     cargarValores
     clear
-    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
-    echo -e "${PURPLE}\t\t============================${NC}"
+    titulo
     echo -e "${PURPLE}J)${NC} JUGAR"
     echo -e "${PURPLE}C)${NC} CONFIGURACION"
     echo -e "${PURPLE}E)${NC} ESTADISTICAS"
@@ -91,8 +96,7 @@ fi
  config(){
     cargarValores
     clear
-    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
-    echo -e "${PURPLE}\t\t============================${NC}"
+    titulo
     echo -e "1) Numero de colores : $numcolores "
     echo -e "2) Tiempo : $segundos"
     echo -e "3) Archivo de estadisticas : $ubiEst/$ficEst"
@@ -142,35 +146,43 @@ fi
     CONTADOR=1
     AUX=""
     SECUENCIA="${NC}"
-
-    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
-    echo -e "${PURPLE}\t\t============================${NC}"
+    titulo
     echo Numero de posibilidade=$numcolores
     echo Numero de segundos=$segundos
     obtenerColor `echo $(($RANDOM%4))`
-    echo -e "$SECUENCIA"
-    while (( aciertos<5 ))
+    echo -e "La secuencia empieza por : $SECUENCIA"
+    while (( aciertos<4 )) #Esta puesto para 5 aciertos
     do
+        echo Espera... y mira bien...
+        sleep $segundos
+        clear
+        titulo
+        echo -e "Introduce la secuencia"
         read USERCOL
         AUX=$AUX`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
-        echo "AUX: $AUX"
         USERCOL=`echo $USERCOL | tr [a-z] [A-Z]`
         if [[ $AUX = $USERCOL ]]; 
         then
+            titulo
+            clear
             CONTADOR=`expr $CONTADOR + 1`
             aciertos=${aciertos}+1
             obtenerColor `echo $(($RANDOM%$numcolores))`        
-            echo -e "$SECUENCIA"
-            sleep $segundos
+            echo -e "La secuencia es : $SECUENCIA"
         else
-            echo -e "${RED}HAS FALLADO!${NC}"
+            echo -e "${RED}HAS FALLADO! :C${NC}"
+            echo -e "La secuencia era : $SECUENCIA"
             echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
             HORATEMP=`echo $(date +%r)| tr -d ' '`
             DURACION=$(( SECONDS - START ))
             echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
+            cont
             menu
         fi
     done
+    #AQUI UN ECHO CON EL MENSAJE DE VICTORIA! QUIZAS UN CLEAR ARRIBA
+    cont
+    menu
 }
  obtenerColor(){
     case "$1" in
