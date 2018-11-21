@@ -73,16 +73,17 @@ fi
         game;;
     c|C)
         config
-        cont;;
+        menu;;
     e|E)
         stats
-        cont;;
+        menu;;
     s|S)
         echo Has salido del menú
         exit 0;;
     *)
         echo Has introducido mal la opción, prueba de nuevo
-        cont;;
+        cont
+        menu;;
     esac
 }
 
@@ -99,9 +100,9 @@ fi
 
     echo -e "\n\nIntroduzca una opcion para modificar >>"
     read opcion
-    echo -e "\nIntroducir valor >>"
     case "$opcion" in
     1)
+        echo -e "\nIntroducir valor >>"
         read opcion
         while (( opcion < 2 ||opcion > 4))
         do
@@ -114,12 +115,14 @@ fi
         rm confiTemp.cfg
         config;;
     2)
+        echo -e "\nIntroducir valor >>"
         read opcion
         sed "/ENTRETIEMPO/ s/$segundos/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
         rm confiTemp.cfg
         config;;
     3)
         echo $ficEst
+        echo -e "\nIntroducir valor >>"
         read opcion
         sed "/ESTADISTICAS/ s/$ficEst/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
         rm confiTemp.cfg
@@ -129,7 +132,8 @@ fi
         menu;;
     *)
         echo Has introducido mal la opción, prueba de nuevo
-        cont;;
+        cont
+        config;;
     esac
 }
 #-----------JUEGO------------#
@@ -150,6 +154,7 @@ fi
         read USERCOL
         AUX=$AUX`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
         echo "AUX: $AUX"
+        USERCOL=`echo $USERCOL | tr [a-z] [A-Z]`
         if [[ $AUX = $USERCOL ]]; 
         then
             CONTADOR=`expr $CONTADOR + 1`
@@ -160,10 +165,10 @@ fi
         else
             echo -e "${RED}HAS FALLADO!${NC}"
             echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
-            HORATEMP=`echo $(date +%r)| tr -d '[[:space:]]'` 
+            HORATEMP=`echo $(date +%r)| tr -d ' '`
             DURACION=$(( SECONDS - START ))
             echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
-            cont
+            menu
         fi
     done
 }
@@ -191,9 +196,9 @@ stats(){
     clear
     echo -e "\t\t\t\t${YELLOW}ESTADISTICAS${NC}"
     echo -e "${PURPLE}\t\t\t============================${NC}\n\n"
-    echo -e "${BLUE}   Partida |   Fecha   |   Hora   | Numero | Tiempo | Longitud | Secuencia"
+    echo -e "${BLUE}   Partida |   Fecha   |    Hora    | Numero | Tiempo | Longitud | Secuencia"
     echo -e "   =======================================================================${NC}\n"
-    for LINEA in `cat $ubiEst/$ficEst ` #LINEA guarda el resultado del fichero datos.txt
+    for LINEA in `cat $ubiEst/$ficEst` #LINEA guarda el resultado del fichero datos.txt
     do
         PARTIDA=`echo $LINEA | cut -d "|" -f1`
         FECHA=`echo $LINEA | cut -d "|" -f2`
@@ -213,7 +218,7 @@ stats(){
 cont(){
     echo ""
     echo -e "\n${PURPLE}Pulsa INTRO para continuar...${NC}"
-    read
+    read;
     return
 }
 menu
