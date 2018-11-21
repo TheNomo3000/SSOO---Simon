@@ -28,7 +28,6 @@ if !(test -f "confi.cfg"); then
 fi
 
 #-----------ARGUMENTOS------------#
-aciertos=0
 temp=(`tail -1 confi.cfg|cut -d "=" -f 2`)
 numcolores=(`head -1 confi.cfg|cut -d "=" -f 2`)
 segundos=(`head -2 confi.cfg|tail -1 |cut -d "=" -f 2`)
@@ -121,6 +120,12 @@ titulo(){
     2)
         echo -e "\nIntroducir valor >>"
         read opcion
+        while (( opcion < 1 ||opcion > 4))
+        do
+            echo -e "$RED+El numero no puede ser menor de 1 o mayor de 4.$NC"
+            echo -e "\nIntroducir un valor valido >>"
+            read opcion
+        done
         sed "/ENTRETIEMPO/ s/$segundos/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
         rm confiTemp.cfg
         config;;
@@ -142,6 +147,7 @@ titulo(){
 }
 #-----------JUEGO------------#
  game (){
+    aciertos=0
     START=$SECONDS
     CONTADOR=1
     AUX=""
@@ -151,7 +157,7 @@ titulo(){
     echo Numero de segundos=$segundos
     obtenerColor `echo $(($RANDOM%4))`
     echo -e "La secuencia empieza por : $SECUENCIA"
-    while (( aciertos<4 )) #Esta puesto para 5 aciertos
+    while (( aciertos<=1 ))
     do
         echo Espera... y mira bien...
         sleep $segundos
@@ -159,17 +165,20 @@ titulo(){
         titulo
         echo -e "Introduce la secuencia"
         read USERCOL
+        obtenerColor `echo $(($RANDOM%$numcolores))`
         AUX=$AUX`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
         USERCOL=`echo $USERCOL | tr [a-z] [A-Z]`
         if [[ $AUX = $USERCOL ]]; 
         then
-            titulo
             clear
+            titulo
             CONTADOR=`expr $CONTADOR + 1`
             aciertos=${aciertos}+1
-            obtenerColor `echo $(($RANDOM%$numcolores))`        
+            #FALTA SOLUCIONAR QUE GUARDE LA SECUENCIA CORREECTAMENTE AL GANAR
             echo -e "La secuencia es : $SECUENCIA"
         else
+            clear
+            titulo
             echo -e "${RED}HAS FALLADO! :C${NC}"
             echo -e "La secuencia era : $SECUENCIA"
             echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
@@ -180,11 +189,19 @@ titulo(){
             menu
         fi
     done
-    #AQUI UN ECHO CON EL MENSAJE DE VICTORIA! QUIZAS UN CLEAR ARRIBA
+    clear
+    echo -e "\n${WHITE}----------------------------------${NC}" 
+    echo -e "\n${BLUE}\t¡ENHORABUENA! \t\t\t\t\t\t${NC}"
+    echo -e "\n${BLUE}   HAS COMPLETADO LA SECUENCIA \t${NC}" 
+    echo -e "\n${WHITE}----------------------------------${NC}" 
+    HORATEMP=`echo $(date +%r)| tr -d ' '`
+    DURACION=$(( SECONDS - START ))
+    echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
     cont
     menu
 }
- obtenerColor(){
+
+obtenerColor(){
     case "$1" in
     0)
         SECUENCIA="${SECUENCIA}${GREEN}V${NC}"
