@@ -180,6 +180,7 @@ titulo(){
             clear
             titulo
             CONTADOR=`expr $CONTADOR + 1`
+            echo -e "La longitud de la secuencia actual es: $CONTADOR"
             aciertos=${aciertos}+1
             #FALTA SOLUCIONAR QUE GUARDE LA SECUENCIA CORREECTAMENTE AL GANAR
             echo -e "La secuencia es : $SECUENCIA"
@@ -198,7 +199,7 @@ titulo(){
     done
     clear
     echo -e "\n${WHITE}----------------------------------${NC}" 
-    echo -e "\n${BLUE}\t¡ENHORABUENA! \t\t\t\t\t\t${NC}"
+    echo -e "\n${BLUE}\t\t¡ENHORABUENA!${NC}"
     echo -e "\n${BLUE}   HAS COMPLETADO LA SECUENCIA \t${NC}" 
     echo -e "\n${WHITE}----------------------------------${NC}" 
     HORATEMP=`echo $(date +%r)| tr -d ' '`
@@ -230,6 +231,14 @@ obtenerColor(){
 #-----------STATS------------#
 stats(){
     clear
+    LONGTOTAL=0
+    TIEMPOTOTAL=0
+    STRINGMINT=0
+    MINTIEMPO=`head -1  estadisticas.txt | cut -d "|" -f5`
+    MAXTIEMPO=`echo $MINTIEMPO`
+    MINLONG=`head -1  estadisticas.txt | cut -d "|" -f6`
+    MAXLONG=`echo $MINLONG`
+    TOTALPART=`wc -l $ubiEst/$ficEst | cut -c7-8`
     echo -e "\t\t\t\t${YELLOW}ESTADISTICAS${NC}"
     echo -e "${PURPLE}\t\t\t============================${NC}\n\n"
     echo -e "${BLUE}   Partida |   Fecha   |    Hora    | Numero | Tiempo | Longitud | Secuencia"
@@ -242,10 +251,59 @@ stats(){
         NUMERO=`echo $LINEA | cut -d "|" -f4`
         TIEMPO=`echo $LINEA | cut -d "|" -f5`
         LONGITUD=`echo $LINEA | cut -d "|" -f6`
-        SECUENCIA1=`echo $LINEA | cut -d "|" -f7`
-        echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIA1"
+        SECUENCIAEST=`echo $LINEA | cut -d "|" -f7`
+        LONGTOTAL=`expr $LONGTOTAL + $LONGITUD`
+        TIEMPOTOTAL=`expr $TIEMPOTOTAL + $TIEMPO`
+        if [[ $TIEMPO -lt $MINTIEMPO ]]; 
+        then
+            MINTIEMPO=`echo $TIEMPO`
+            STRINGMINT=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
+        elif [[ $TIEMPO -gt $MAXTIEMPO ]]
+        then
+            MAXTIEMPO=`echo $TIEMPO`
+            STRINGMAXT=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
+        fi
+        if [[ $LONGITUD -lt $MINLONG ]]; 
+        then
+            MINLONG=`echo $LONGITUD`
+            STRINGLONGMIN=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
+        elif [[ $LONGITUD -gt $MAXLONG ]]
+        then
+            MAXLONG=`echo $LONGITUD`
+            STRINGLONGMAX=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
+            PORCENT=`echo $SECUENCIAEST`
+        fi
+        echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"
     done
-    echo -e "${BLUE}\n   =======================================================================${NC}\n"
+    MEDIATIEM=`expr $TIEMPOTOTAL / $TOTALPART`
+    MEDIALONG=`expr $LONGTOTAL / $TOTALPART`
+    echo -e "${WHITE}\n GENERALES: ${NC}\n"
+    echo -e "${BLUE}\n   =======================================================================${NC}"
+    echo -e "${GREEN}\n Numero total de partidas jugadas: ${NC}$TOTALPART"
+    echo -e "${GREEN}\n Media de longitudes de las secuencias de todas las partidas jugadas:${NC} $MEDIALONG"
+    echo -e "${GREEN}\n Media de los tiempos de todas las partidas jugadas:${NC} $MEDIATIEM"
+    echo -e "${GREEN}\n Tiempo total invertido en todas las partidas:${NC} $TIEMPOTOTAL"
+    echo -e "${WHITE}\n\n  JUGADAS ESPECIALES: ${NC}"
+    echo -e "${WHITE}  ============================${NC}"
+    echo -e "${BLUE}\n  Datos de la jugada mas corta: ${NC} \n\n$STRINGMINT"
+    echo -e "${BLUE}\n  Datos de la jugada mas larga: ${NC} \n\n$STRINGMAXT"
+    echo -e "${BLUE}\n  Datos de la jugada de menor longitud de colores: ${NC}\n\n$STRINGLONGMIN"
+    echo -e "${BLUE}\n  Datos de la jugada de mayor longitud de colores: ${NC}\n\n$STRINGLONGMAX"
+    TEMPZ=`echo "$PORCENT" | awk -F"Z" '{print NF-1}'`
+    TEMPA=`echo "$PORCENT" | awk -F"A" '{print NF-1}'`
+    TEMPR=`echo "$PORCENT" | awk -F"R" '{print NF-1}'`
+    TEMPv=`echo "$PORCENT" | awk -F"v" '{print NF-1}'`
+    echo -e "$PORCENT"
+    echo -e "${BLUE}\n  Porcentaje de los diferentes colores de la jugada de mayor longitud de colores: ${NC}\n"
+    PORZ=$($TEMPZ*100)
+    PORZ=`expr $PORZ / $MAXLONG`
+    PORA=`expr $TEMPA * 100 / $MAXLONG`
+    PORR=`expr [ $TEMPR * 100 ] / $MAXLONG`
+    PORV=`expr [ $TEMPV * 100 ] / $MAXLONG`
+    echo -e "\nPorcentaje de Azules: $PORZ"
+    echo -e "\nPorcentaje de Verdes: $PORV"
+    echo -e "\nPorcentaje de Amarillos: $PORA"
+    echo -e "\nPorcentaje de Rojos: $PORR"
     cont
     menu
 }
