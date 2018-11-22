@@ -166,7 +166,7 @@ titulo(){
     echo -e "La secuencia empieza por : $SECUENCIA"
     while (( aciertos<=19 ))
     do
-        echo Espera... y mira b ien...
+        echo Espera... y mira bien...
         sleep $segundos
         clear
         titulo
@@ -177,31 +177,26 @@ titulo(){
         obtenerColor `echo $(($RANDOM%$numcolores))`
         AUX=$AUX`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
         USERCOL=`echo $USERCOL | tr [a-z] [A-Z]`
-        if [[ "$AUX" =~ [^AZBRazbr] ]]; then
-            if [[ $AUX = $USERCOL ]]; 
-            then
-                clear
-                titulo
-                aciertos=${aciertos}+1
-                CONTADOR=`expr $CONTADOR + 1`
-                echo -e "La longitud de la secuencia actual es: $CONTADOR"
-                echo -e "La secuencia es : $SECUENCIA"
-            else
-                clear
-                titulo
-                echo -e "${RED}HAS FALLADO! :C${NC}"
-                echo -e "La secuencia era : $SECUENCIA"
-                echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
-                HORATEMP=`echo $(date +%r)| tr -d ' '`
-                DURACION=$(( SECONDS - START ))
-                echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
-                cont
-                menu
-            fi
+        if [[ $AUX = $USERCOL ]]; 
+        then
+            clear
+            titulo
+            aciertos=${aciertos}+1
+            CONTADOR=`expr $CONTADOR + 1`
+            echo -e "La longitud de la secuencia actual es: $CONTADOR"
+            echo -e "La secuencia es : $SECUENCIA"
         else
-         echo "INVALIDO, vuelve a introducir el número"
+            clear
+            titulo
+            echo -e "${RED}HAS FALLADO! :C${NC}"
+            echo -e "La secuencia era : $SECUENCIA"
+            echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
+            HORATEMP=`echo $(date +%r)| tr -d ' '`
+            DURACION=$(( SECONDS - START ))
+            echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
+            cont
+            menu
         fi
-        
     done
     clear
     echo -e "\n${WHITE}----------------------------------${NC}" 
