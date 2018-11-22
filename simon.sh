@@ -42,7 +42,7 @@ ubiEst=${temp%/*}
 ficEst=${temp##*[/]}
 ruta=(`pwd`)
 if !(test -f $ubiEst/$ficEst); then
-  touch estadisticas.txt
+  touch log.txt
   ubiEst=(`pwd`)
   rm confi.cfg
   touch confi.cfg
@@ -63,7 +63,7 @@ fi
 }
 #--------------Titulo---------------#
 titulo(){
-    echo -e "\t\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
+    echo -e "\t\t${YELLOW}S${NC}${RED}i${NC}${BLUE}m${NC}${YELLOW}o${NC}${RED}n${NC} ${CYAN}Game${NC} ${GREEN}v1.0${NC}"
     echo -e "${PURPLE}\t\t============================${NC}"
     return
 }
@@ -138,9 +138,9 @@ titulo(){
         config;;
     3)
         echo $ficEst
-        echo -e "\nIntroducir valor >>"
+        echo -e "\nIntroducir el nombre del archivo>>"
         read opcion
-        sed "/ESTADISTICAS/ s/$ficEst/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
+        sed "/ESTADISTICAS/ s/$ubiEst/$ficEst/$opcion/g" confi.cfg > confiTemp.cfg && mv confiTemp.cfg confi.cfg
         rm confiTemp.cfg
         config;;
     4)
@@ -164,38 +164,44 @@ titulo(){
     echo Numero de segundos=$segundos
     obtenerColor `echo $(($RANDOM%4))`
     echo -e "La secuencia empieza por : $SECUENCIA"
-    while (( aciertos<=1 ))
+    while (( aciertos<=19 ))
     do
-        echo Espera... y mira bien...
+        echo Espera... y mira b ien...
         sleep $segundos
         clear
         titulo
-        echo -e "Introduce la secuencia"
+        echo -e "\nIntroduce los colores (AZVR) sin espacios, las mayusculas y minusculas son indiferentes.\n\n"
+        echo -e "\"SIMON\", Ahora tu >>>>"
         read USERCOL
+        TEMPSECUENCIA=`echo $SECUENCIA`
         obtenerColor `echo $(($RANDOM%$numcolores))`
         AUX=$AUX`echo $SECUENCIA | cut -c $((18*$CONTADOR))`
         USERCOL=`echo $USERCOL | tr [a-z] [A-Z]`
-        if [[ $AUX = $USERCOL ]]; 
-        then
-            clear
-            titulo
-            CONTADOR=`expr $CONTADOR + 1`
-            echo -e "La longitud de la secuencia actual es: $CONTADOR"
-            aciertos=${aciertos}+1
-            #FALTA SOLUCIONAR QUE GUARDE LA SECUENCIA CORREECTAMENTE AL GANAR
-            echo -e "La secuencia es : $SECUENCIA"
+        if [[ "$AUX" =~ [^AZBRazbr] ]]; then
+            if [[ $AUX = $USERCOL ]]; 
+            then
+                clear
+                titulo
+                aciertos=${aciertos}+1
+                CONTADOR=`expr $CONTADOR + 1`
+                echo -e "La longitud de la secuencia actual es: $CONTADOR"
+                echo -e "La secuencia es : $SECUENCIA"
+            else
+                clear
+                titulo
+                echo -e "${RED}HAS FALLADO! :C${NC}"
+                echo -e "La secuencia era : $SECUENCIA"
+                echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
+                HORATEMP=`echo $(date +%r)| tr -d ' '`
+                DURACION=$(( SECONDS - START ))
+                echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
+                cont
+                menu
+            fi
         else
-            clear
-            titulo
-            echo -e "${RED}HAS FALLADO! :C${NC}"
-            echo -e "La secuencia era : $SECUENCIA"
-            echo -e "\n${GREEN}VUELVE A INTENTARLO!${NC}"
-            HORATEMP=`echo $(date +%r)| tr -d ' '`
-            DURACION=$(( SECONDS - START ))
-            echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
-            cont
-            menu
+         echo "INVALIDO, vuelve a introducir el número"
         fi
+        
     done
     clear
     echo -e "\n${WHITE}----------------------------------${NC}" 
@@ -204,7 +210,8 @@ titulo(){
     echo -e "\n${WHITE}----------------------------------${NC}" 
     HORATEMP=`echo $(date +%r)| tr -d ' '`
     DURACION=$(( SECONDS - START ))
-    echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$SECUENCIA" >> $ubiEst/$ficEst
+    CONTADOR=`expr $CONTADOR - 1`
+    echo -e "$$|$(date +%x)|$HORATEMP|$numcolores|$DURACION|$CONTADOR|$TEMPSECUENCIA" >> $ubiEst/$ficEst
     cont
     menu
 }
@@ -228,21 +235,35 @@ obtenerColor(){
     esac
 }
 
-#-----------STATS------------#
+#-----------ESTADISTICAS------------#
+comprobarArchivo(){
+    VACIO=(`cat $ubiEst/$ficEst | head -1`)
+    if [[ $VACIO -eq 0 ]]
+    then
+        clear
+        titulo
+        echo -e "El archivo $ubiEst/$ficEst esta vacío.\nJuega unas partidas y vuelve por aquí"
+        cont
+        menu
+    else
+        return
+    fi
+}
 stats(){
+    comprobarArchivo
     clear
     LONGTOTAL=0
     TIEMPOTOTAL=0
     STRINGMINT=0
-    MINTIEMPO=`head -1  estadisticas.txt | cut -d "|" -f5`
+    MINTIEMPO=`head -1  $ficEst | cut -d "|" -f5`
     MAXTIEMPO=`echo $MINTIEMPO`
-    MINLONG=`head -1  estadisticas.txt | cut -d "|" -f6`
+    MINLONG=`head -1  $ficEst | cut -d "|" -f6`
     MAXLONG=`echo $MINLONG`
     TOTALPART=`wc -l $ubiEst/$ficEst | cut -c7-8`
-    echo -e "\t\t\t\t${YELLOW}ESTADISTICAS${NC}"
-    echo -e "${PURPLE}\t\t\t============================${NC}\n\n"
-    echo -e "${BLUE}   Partida |   Fecha   |    Hora    | Numero | Tiempo | Longitud | Secuencia"
-    echo -e "   =======================================================================${NC}\n"
+    echo -e "\t\t\t\t\t${YELLOW}    ESTADISTICAS${NC}"
+    echo -e "${PURPLE}\t\t\t\t\t========================${NC}\n\n"
+    echo -e "${BLUE}   Partida |   Fecha   |    Hora    | NumeroColores | Tiempo | LongitudSecuencia | SecuenciaColores"
+    echo -e "   ================================================================================================${NC}\n"
     for LINEA in `cat $ubiEst/$ficEst` #LINEA guarda el resultado del fichero datos.txt
     do
         PARTIDA=`echo $LINEA | cut -d "|" -f1`
@@ -254,37 +275,47 @@ stats(){
         SECUENCIAEST=`echo $LINEA | cut -d "|" -f7`
         LONGTOTAL=`expr $LONGTOTAL + $LONGITUD`
         TIEMPOTOTAL=`expr $TIEMPOTOTAL + $TIEMPO`
-        if [[ $TIEMPO -lt $MINTIEMPO ]]; 
+
+        if [[ $TIEMPO -lt $MINTIEMPO || $TIEMPO -eq $MINTIEMPO ]]; 
         then
             MINTIEMPO=`echo $TIEMPO`
-            STRINGMINT=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
-        elif [[ $TIEMPO -gt $MAXTIEMPO ]]
+            STRINGMINT=`echo -e "     $PARTIDA     $FECHA   $HORA         $NUMERO           $TIEMPO            $LONGITUD\t\t$SECUENCIAEST"`
+        fi
+        
+        if [[ $TIEMPO -gt $MAXTIEMPO || $TIEMPO -eq $MAXTIEMPO ]]
         then
             MAXTIEMPO=`echo $TIEMPO`
-            STRINGMAXT=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
+            STRINGMAXT=`echo -e "     $PARTIDA     $FECHA   $HORA         $NUMERO           $TIEMPO            $LONGITUD\t\t$SECUENCIAEST"`
         fi
-        if [[ $LONGITUD -lt $MINLONG ]]; 
+
+        if [[ $LONGITUD -lt $MINLONG || $LONGITUD -eq $MINLONG ]]; 
         then
             MINLONG=`echo $LONGITUD`
-            STRINGLONGMIN=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
-        elif [[ $LONGITUD -gt $MAXLONG ]]
+            STRINGLONGMIN=`echo -e "     $PARTIDA     $FECHA   $HORA         $NUMERO           $TIEMPO            $LONGITUD\t\t$SECUENCIAEST"`
+        fi
+        
+        if [[ $LONGITUD -gt $MAXLONG || $LONGITUD -eq $MAXLONG ]]
         then
             MAXLONG=`echo $LONGITUD`
-            STRINGLONGMAX=`echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"`
+            STRINGLONGMAX=`echo -e "     $PARTIDA     $FECHA   $HORA         $NUMERO           $TIEMPO            $LONGITUD\t\t$SECUENCIAEST"`
             PORCENT=`echo $SECUENCIAEST`
         fi
-        echo -e "    $PARTIDA    $FECHA    $HORA      $NUMERO        $TIEMPO         $LONGITUD       $SECUENCIAEST"
+
+        echo -e "     $PARTIDA     $FECHA   $HORA\t     $NUMERO\t\t $TIEMPO\t      $LONGITUD\t\t\t$SECUENCIAEST"
     done
     MEDIATIEM=`expr $TIEMPOTOTAL / $TOTALPART`
     MEDIALONG=`expr $LONGTOTAL / $TOTALPART`
-    echo -e "${WHITE}\n GENERALES: ${NC}\n"
-    echo -e "${BLUE}\n   =======================================================================${NC}"
+    echo -e "${BLUE}   ================================================================================================${NC}\n"
+    echo -e "\n\n GENERALES:"
+    echo -e "${WHITE} ========================${NC}"
     echo -e "${GREEN}\n Numero total de partidas jugadas: ${NC}$TOTALPART"
     echo -e "${GREEN}\n Media de longitudes de las secuencias de todas las partidas jugadas:${NC} $MEDIALONG"
     echo -e "${GREEN}\n Media de los tiempos de todas las partidas jugadas:${NC} $MEDIATIEM"
     echo -e "${GREEN}\n Tiempo total invertido en todas las partidas:${NC} $TIEMPOTOTAL"
     echo -e "${WHITE}\n\n  JUGADAS ESPECIALES: ${NC}"
-    echo -e "${WHITE}  ============================${NC}"
+    echo -e " ========================"
+    echo -e "${BLUE}   Partida |   Fecha   |    Hora    | NumeroColores | Tiempo | LongitudSecuencia | SecuenciaColores"
+    echo -e "   ================================================================================================${NC}\n"
     echo -e "${BLUE}\n  Datos de la jugada mas corta: ${NC} \n\n$STRINGMINT"
     echo -e "${BLUE}\n  Datos de la jugada mas larga: ${NC} \n\n$STRINGMAXT"
     echo -e "${BLUE}\n  Datos de la jugada de menor longitud de colores: ${NC}\n\n$STRINGLONGMIN"
@@ -292,18 +323,16 @@ stats(){
     TEMPZ=`echo "$PORCENT" | awk -F"Z" '{print NF-1}'`
     TEMPA=`echo "$PORCENT" | awk -F"A" '{print NF-1}'`
     TEMPR=`echo "$PORCENT" | awk -F"R" '{print NF-1}'`
-    TEMPv=`echo "$PORCENT" | awk -F"v" '{print NF-1}'`
-    echo -e "$PORCENT"
+    TEMPV=`echo "$PORCENT" | awk -F"V" '{print NF-1}'`
     echo -e "${BLUE}\n  Porcentaje de los diferentes colores de la jugada de mayor longitud de colores: ${NC}\n"
-    PORZ=$($TEMPZ*100)
-    PORZ=`expr $PORZ / $MAXLONG`
-    PORA=`expr $TEMPA * 100 / $MAXLONG`
-    PORR=`expr [ $TEMPR * 100 ] / $MAXLONG`
-    PORV=`expr [ $TEMPV * 100 ] / $MAXLONG`
-    echo -e "\nPorcentaje de Azules: $PORZ"
-    echo -e "\nPorcentaje de Verdes: $PORV"
-    echo -e "\nPorcentaje de Amarillos: $PORA"
-    echo -e "\nPorcentaje de Rojos: $PORR"
+    PORZ=`expr $TEMPZ \* 100 / $MAXLONG`
+    PORA=`expr $TEMPA \* 100 / $MAXLONG`
+    PORR=`expr $TEMPR \* 100 / $MAXLONG`
+    PORV=`expr $TEMPV \* 100 / $MAXLONG`
+    echo -e "\n\tPorcentaje de Azules: $PORZ%"
+    echo -e "\n\tPorcentaje de Verdes: $PORV%"
+    echo -e "\n\tPorcentaje de Amarillos: $PORA%"
+    echo -e "\n\tPorcentaje de Rojos: $PORR%"
     cont
     menu
 }
